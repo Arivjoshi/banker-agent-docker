@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  bank-agents:
+    # For local dev: build from source
+    build: .
+
+    # For others pulling from Docker Hub, they use this instead:
+    # image: your-dockerhub-username/bank-onboarding-agents:latest
+
+    container_name: bank-onboarding-agents
+    ports:
+      - "8000:8000"       # host:container  →  localhost:8000 maps to container port 8000
+    environment:
+      - ENV=development   # swap to "production" when going live
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c",
+             "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
